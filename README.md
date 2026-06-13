@@ -1,148 +1,198 @@
-# AI Website Cloner — Stage-2 Source Reconstruction Engine
+# 1:1 Frontend Website Replication — Claude Code Skill
 
-> The dedicated **Stage 2** engine for the `replicating-frontend-websites` Claude Code skill.
-> Forked from [`JCodesMore/ai-website-cloner-template`](https://github.com/JCodesMore/ai-website-cloner-template) · MIT licensed · trimmed to **Claude Code only**.
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![For Learning Only](https://img.shields.io/badge/Use-Learning%20%26%20Research%20Only-orange.svg)](#legal-notice)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-Skill-blueviolet)](https://claude.ai/code)
 
-<a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a>
-<img src="https://img.shields.io/badge/engine-Stage%202-7c3aed" alt="Stage 2 Engine" />
-<img src="https://img.shields.io/badge/runs%20in-Claude%20Code-d97757" alt="Claude Code" />
+> **⚠️ For personal learning, technical research, and offline archiving only.**
+> Public redeployment, commercial use, or claiming original authorship requires authorization from the rights holder of the target site.
 
-This repository AI-rebuilds a target website's compiled front end into **clean, editable Next.js / React / TypeScript / Tailwind source**. You point it at a URL inside Claude Code, run `/clone-website <url>`, and it inspects the live page, extracts design tokens and assets, writes component specs, and dispatches parallel builder agents to reconstruct the site section by section.
+A two-stage frontend website replication skill for [Claude Code](https://claude.ai/code). Stage 1 downloads the compiled production output as an interactive offline mirror. Stage 2 (opt-in, compiled sites only) uses AI to rebuild the site into clean, editable modern source code.
 
 ---
 
-## Where this fits: the two-stage replication flow
+## Two-Stage Architecture
 
-Replicating a website cleanly is a two-stage pipeline. This repo is **Stage 2**.
+```
+Stage 1 · Interactive Mirror (all sites, default)
+  Fingerprint → Select playbook → Download compiled output → Local server → Verify
+  Output: <project>-mirror/  (T0 asset archive + T1 interactive mirror)
+        │
+        ▼  ★ Handoff gate (mandatory): honest disclosure + site-type routing
+   ┌─ Non-compiled site (hand-written static) → "Mirror ≈ source, no Stage 2 needed"
+   └─ Compiled site (SPA / WebGL / SSR / bundled) → Offer Stage 2
+        │ (user confirms)
+        ▼
+Stage 2 · AI Equivalent Rebuild (compiled sites only, opt-in)
+  Set up 3-folder workspace → Clone engine → Run /clone-website → Verify
+  Output: <project>-clone/  (T2-AI equivalent source, Next.js / React / TS)
+```
 
-| Stage | Tool | Input | Output |
-|-------|------|-------|--------|
-| **Stage 1 — Mirror** | The `replicating-frontend-websites` skill | A live URL | `<project>-mirror/` — the **compiled** static site (minified HTML/CSS/JS, bundled assets) exactly as shipped |
-| **Stage 2 — Rebuild** | **This engine** (`ai-website-cloner-template`) | The live URL (and the Stage-1 mirror as reference) | `<project>-clone/` — a **fresh, human-editable Next.js source project** that matches the original visually and behaviorally |
+### Honesty Principle
 
-Stage 1 captures *what the browser receives*. Stage 2 reconstructs *maintainable source you can actually develop against*.
+Stage 2 produces an **AI equivalent rebuild on a modern stack — not the target site's original pre-bundle source code.** Compiled/minified output is irreversible. The rebuild aligns visually and interactively with the original; it cannot recover the original modules, shaders, or 3D assets. All Stage 2 outputs must be labeled *"AI equivalent rebuild, not original source."*
 
-### Honesty about the output
+---
 
-**This produces an AI equivalent rebuild on a modern stack — NOT the target's original pre-bundle source code.**
+## Repository Structure
 
-Compiled, minified, tree-shaken, and bundled output cannot be reversed back into the author's original source. Variable names, file boundaries, build-time tooling, original component structure, shader sources, and 3D project files are gone for good. What this engine delivers is a **clean re-implementation** in idiomatic Next.js 16 / React 19 / TypeScript / Tailwind v4 that is **aligned to the original's visuals and interactions** — layout, spacing, colors, typography, animations, and behavior — but is its own independent codebase. Treat it as a faithful re-creation, not a decompilation.
+```
+skills/
+  replicating-frontend-websites/   # ★ Main skill — Stage 1 routing + Stage 2 handoff
+  │   SKILL.md                     #   Router: decision tree, iron laws, phase skeleton
+  │   references/
+  │   │   fingerprinting.md        #   Phase 0: site fingerprinting
+  │   │   playbook-static.md       #   Playbook A: pure static / SSG
+  │   │   playbook-spa.md          #   Playbook B: DOM SPA / SSR
+  │   │   playbook-webgl.md        #   Playbook C: WebGL / Canvas
+  │   │   playbook-hybrid.md       #   Playbook D: backend-API sites (additive)
+  │   │   playbook-reconstruction.md # ★ Playbook S2: Stage 2 AI rebuild
+  │   │   verification.md          #   Honest tier definitions + acceptance gates
+  │   │   risks-degradation.md     #   Risk table G1-G19 + degradation matrix
+  │   └── scripts/
+  │       ├── fingerprint.sh       #   Site fingerprinting script
+  │       ├── lib.sh               #   Download helpers (dl / real_asset / probe_seq)
+  │       ├── capture.js           #   Playwright HAR capture
+  │       ├── har2urls.sh          #   HAR → asset URL list
+  │       └── serve.js             #   Local server (MIME + COOP/COEP headers)
+  └── clone-website/               # Stage 2 engine skill (used inside <project>-clone/)
+      └── SKILL.md
+
+src/                               # Next.js 16 scaffold — the Stage 2 engine project
+docs/                              # Research output templates
+scripts/                           # Asset download utilities
+```
+
+---
+
+## Installation
+
+### Download the Skill Pack (Recommended)
+
+Download **`replicating-frontend-websites.zip`** from the [Releases page](../../releases) and extract it to your Claude Code skills directory:
+
+**Windows (PowerShell):**
+```powershell
+# User-global — available in all projects
+Expand-Archive replicating-frontend-websites.zip "$env:USERPROFILE\.claude\skills\"
+
+# Project-local — available only in current project
+Expand-Archive replicating-frontend-websites.zip ".\.claude\skills\"
+```
+
+**macOS / Linux:**
+```bash
+# User-global
+unzip replicating-frontend-websites.zip -d ~/.claude/skills/
+
+# Project-local
+unzip replicating-frontend-websites.zip -d ./.claude/skills/
+```
+
+### Clone This Repository
+
+```bash
+git clone https://github.com/AIMFllyYS/ai-website-cloner-template
+```
+
+Then copy the skill manually:
+
+```bash
+# macOS / Linux
+cp -r ai-website-cloner-template/skills/replicating-frontend-websites ~/.claude/skills/
+
+# Windows (PowerShell)
+Copy-Item -Recurse ai-website-cloner-template\skills\replicating-frontend-websites "$env:USERPROFILE\.claude\skills\"
+```
 
 ---
 
 ## Requirements
 
-- **Node.js >= 24**
-- **[Claude Code](https://docs.anthropic.com/en/docs/claude-code)** with browser access, launched as:
-  ```bash
-  claude --chrome
-  ```
-  (Browser automation is mandatory — the engine inspects the live page via a browser MCP. Chrome MCP is preferred; Playwright/Puppeteer/Browserbase also work.)
-- The `/clone-website` command (shipped in `.claude/skills/clone-website/`).
-
-> This fork is **Claude Code only**. All other agent/IDE integrations (Cursor, Windsurf, Gemini, Codex, Copilot, Cline, Continue, Amazon Q, Augment, Aider, OpenCode) and their sync scripts have been removed.
+| Feature | Requirement |
+|---------|-------------|
+| Stage 1 (mirror) | Claude Code, Bash, Node.js (for `serve.js`) |
+| Stage 2 (rebuild) | Node.js >= 24, `claude --chrome` (browser MCP) |
 
 ---
 
-## Quick start
+## Usage
+
+Once the skill is installed, open any Claude Code session and say:
+
+```
+# Stage 1 — interactive mirror
+1:1 clone this website: https://example.com
+
+# Stage 2 — AI equivalent source rebuild (compiled sites only)
+Clone https://example.com and rebuild editable source code
+```
+
+The skill activates automatically and walks through:
+compliance disclosure → open-source check → fingerprinting → playbook selection → Stage 1 download → acceptance verification → (compiled sites) Stage 2 offer.
+
+### Stage 2 Workspace Layout
+
+```
+<workspace>/
+├── <project>-mirror/           # Stage 1 output (already exists)
+├── ai-website-cloner-template/ # Engine: keep pristine as reference
+└── <project>-clone/            # Stage 2 output: copy engine here, run /clone-website
+```
+
+To enable the `/clone-website` engine skill inside `<project>-clone/`:
 
 ```bash
-# 1. Install dependencies
+# Copy engine skill into the project
+cp -r ai-website-cloner-template <project>-clone
+cd <project>-clone
+mkdir -p .claude/skills
+cp -r skills/clone-website .claude/skills/
 npm install
 
-# 2. Launch Claude Code with browser access
+# Start Claude Code with browser access
 claude --chrome
-
-# 3. Run the engine on a target URL
-/clone-website https://example.com
-```
-
-You can pass multiple URLs: `/clone-website <url1> [<url2> ...]`. Each site is kept in its own isolated extraction folder.
-
----
-
-## Workspace convention (three folders)
-
-Keep all three side by side in one workspace so the engine can cross-reference the mirror while it rebuilds:
-
-```
-my-workspace/
-├── <project>-mirror/                 # Stage 1 output — compiled mirror of the live site
-├── ai-website-cloner-template/       # THIS engine (Stage 2)
-└── <project>-clone/                  # Stage 2 output — the rebuilt Next.js source project
-```
-
-- `<project>-mirror/` — produced by the Stage-1 mirror skill; the compiled reference and **asset library** (reuse already-downloaded images/videos/fonts instead of re-hitting the server).
-- `ai-website-cloner-template/` — this repository; the reconstruction engine. Keep it pristine; instantiate a copy into `<project>-clone/` to do the actual rebuild.
-- `<project>-clone/` — the editable Next.js/React/TS rebuild this engine produces.
-
----
-
-## Tech stack of the rebuilt output
-
-- **Next.js 16** — App Router, React 19, TypeScript strict
-- **shadcn/ui** — Radix primitives + Tailwind CSS v4 (`cn()` utility)
-- **Tailwind CSS v4** — oklch design tokens
-- **Lucide React** — default icons, replaced/supplemented by SVGs extracted from the target
-
-## How the engine works
-
-The `/clone-website` skill runs a multi-phase pipeline:
-
-1. **Reconnaissance** — screenshots, design-token extraction, interaction sweep (scroll/click/hover/responsive).
-2. **Foundation** — fonts, colors, globals, and downloads every asset.
-3. **Component specs** — detailed spec files in `docs/research/` with exact computed CSS, states, behaviors, and content.
-4. **Parallel build** — builder agents in git worktrees, one per section/component.
-5. **Assembly & QA** — merges worktrees, wires the page, runs a visual diff against the original.
-
-## Commands
-
-```bash
-npm run dev        # Start dev server
-npm run build      # Production build
-npm run lint       # ESLint
-npm run typecheck  # TypeScript check
-npm run check      # lint + typecheck + build
+# Then inside the session:
+# /clone-website https://example.com
 ```
 
 ---
 
-## 中文说明
+## Verified Test Cases
 
-本仓库是 Claude Code 技能 **`replicating-frontend-websites`（前端网站复刻）** 的**第二阶段（Stage 2）源码重建引擎**。
-
-**两阶段流程：**
-
-- **第一阶段（下载镜像）** —— 由 `replicating-frontend-websites` 技能完成，把目标站点**已编译**的静态产物（压缩后的 HTML/CSS/JS、打包资源）原样抓取到 `<project>-mirror/`。
-- **第二阶段（AI 重建，即本工具）** —— 在 Claude Code 中运行 `/clone-website <url>`，把已编译的站点用 AI **重建为干净、可编辑的 Next.js / React / TypeScript / Tailwind 源码**，输出到 `<project>-clone/`。
-
-**重要的诚实声明：** 本工具的产物是**基于现代技术栈的 AI 等价重建，并非目标站点打包前的原始源码**。压缩、混淆、打包后的产物无法被逆向还原成作者最初的源代码；我们只能在**视觉与交互层面对齐**原站，生成一份独立、可维护的全新代码库。
-
-**环境要求：**
-- Node.js >= 24
-- 在 Claude Code 中运行，并开启浏览器访问：`claude --chrome`
-- 使用 `/clone-website <url>` 命令
-
-**工作区三文件夹约定：**
-```
-<project>-mirror/              # 第一阶段：编译镜像（也作资产库）
-ai-website-cloner-template/    # 本引擎（第二阶段），保持纯净
-<project>-clone/               # 第二阶段产物：重建出的 Next.js 源码
-```
-
-**本分支已精简为仅支持 Claude Code**，移除了所有其它 Agent/IDE 集成。
+| Site | Type | Result |
+|------|------|--------|
+| `shuchenglin-handbook.pages.dev` | Pure static / SSG | Stage 1 T0+T1, correctly routes "no Stage 2 needed" |
+| `www.igloo.inc` | WebGL SPA (Vite + Three.js) | Stage 1 T0+T1 complete; Stage 2 workspace ready, requires `claude --chrome` |
 
 ---
 
-## Not intended for
+## Credits
 
-- Phishing, impersonation, or any unlawful use.
-- Passing off someone else's design, logos, brand assets, or copy as your own.
-- Violating a site's terms of service. Some sites prohibit scraping or reproduction — check first.
+**Stage 2 engine** (`skills/clone-website/` + `src/` Next.js scaffold):
+Derived from [ai-website-cloner-template](https://github.com/JCodesMore/ai-website-cloner-template) by [JCodesMore](https://github.com/JCodesMore), released under the MIT License © 2025 JCodesMore. This fork repurposes the engine as the Stage-2 component of the `replicating-frontend-websites` skill. The original MIT attribution is preserved in [NOTICE](NOTICE).
 
-## Credits & license
+**Stage 1 skill** (`skills/replicating-frontend-websites/`):
+Designed and validated on real-world sites including a Three.js/WebGL experience site (igloo.inc) and a Cloudflare Pages static site.
 
-Forked from **[JCodesMore/ai-website-cloner-template](https://github.com/JCodesMore/ai-website-cloner-template)**.
-Licensed under the **MIT License** — see [`LICENSE`](./LICENSE). The original copyright (© 2025 JCodesMore) is retained as required.
+---
 
-This fork is trimmed to **Claude Code only** and repurposed as the Stage-2 engine for the `replicating-frontend-websites` skill.
+## License
+
+This project is licensed under the **Apache License 2.0** — see [LICENSE](LICENSE).
+
+The `skills/clone-website/` skill and `src/` Next.js scaffold are derived from work by JCodesMore (MIT License © 2025) — see [NOTICE](NOTICE).
+
+---
+
+## Legal Notice
+
+This tool is intended **strictly for personal learning, technical research, and offline archiving**.
+
+- Target sites' brand identity, design language, fonts, images, 3D assets, audio, and source code may be protected by copyright, trademark, and related laws.
+- **Mirroring a site does not transfer any rights.** Public redeployment, commercial use, distribution, or claiming original authorship requires explicit authorization from the rights holder.
+- Web scraping should respect `robots.txt` conventions, rate limits, and server load — do not burden the source server.
+- Stage 2 AI equivalent rebuild does **not** eliminate the target site's content and design copyright. Re-publishing a rebuilt version still requires rights-holder authorization.
+- The authors of this skill assume no liability for misuse.
+
+By using this skill, you agree to use it solely for lawful, non-commercial, personal purposes.
