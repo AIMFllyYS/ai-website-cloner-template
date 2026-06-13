@@ -63,9 +63,10 @@ scripts/            # Asset download scripts
 ## Role in the two-stage replication flow
 This repo is the **Stage 2 (source reconstruction) engine** for the `replicating-frontend-websites` Claude Code skill. Stage 1 (a separate skill) downloads the target's compiled production output into `<project>-mirror/`. Stage 2 (this engine, via `/clone-website`) AI-rebuilds it into clean, editable Next.js/React/TS source in `<project>-clone/`.
 
-The full skill pack lives in `skills/` at the repo root:
-- `skills/replicating-frontend-websites/` — Stage 1 routing + Stage 2 handoff (install to `~/.claude/skills/`)
-- `skills/clone-website/` — this engine's skill file (copy to `<project>-clone/.claude/skills/` to enable `/clone-website`)
+The full skill pack lives in `skills/` at the repo root, in three platform-tuned variants — each containing both skills (`replicating-frontend-websites/` + `clone-website/`):
+- `skills/claude/` — Claude Code variant (install to `~/.claude/skills/`)
+- `skills/codex/` — OpenAI Codex variant (install to `~/.agents/skills/`; frontmatter trimmed to name+description, shell+apply_patch model, network-off notes)
+- `skills/default/` — portable variant for any spec-compliant agent (tool-agnostic phrasing, `compatibility` declared)
 
 **Honesty rule (non-negotiable):** the output is an **AI equivalent rebuild on a modern stack — NOT the target's original pre-bundle source.** Compiled/minified output cannot be reversed. Always align to the original's visuals & interactions; never claim you recovered the original source code.
 

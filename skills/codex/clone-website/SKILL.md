@@ -1,11 +1,11 @@
 ---
 name: clone-website
-description: Reverse-engineer and clone one or more websites in one shot — extracts assets, CSS, and content section-by-section and proactively dispatches parallel builder agents in worktrees as it goes. Use this whenever the user wants to clone, replicate, rebuild, reverse-engineer, or copy any website. Also triggers on phrases like "make a copy of this site", "rebuild this page", "pixel-perfect clone". Provide one or more target URLs as arguments.
-argument-hint: "<url1> [<url2> ...]"
-user-invocable: true
+description: Reverse-engineer and clone one or more websites in one shot — extracts assets, CSS, and content section-by-section and proactively dispatches parallel builder agents in worktrees as it goes. Use this whenever the user wants to clone, replicate, rebuild, reverse-engineer, or copy any website. Also triggers on phrases like "make a copy of this site", "rebuild this page", "pixel-perfect clone". Provide one or more target URLs as arguments. Trigger via /skills or $clone-website. Do NOT trigger for building a new site from scratch or backend work.
 ---
 
 # Clone Website
+
+> **Platform · OpenAI Codex.** Install to `~/.agents/skills/clone-website/`. Trigger via `/skills` or `$clone-website <url>`. Codex works through the **shell + `apply_patch`** (no separate Read/Edit/Write tools). A **browser-automation MCP must be configured** (there is no `claude --chrome` flag). **Network is OFF by default** — enable it for asset downloads (`network_access = true`, approvals, or Full Access). Parallel builders = Codex subagents (`/agent`) over git worktrees.
 
 You are about to reverse-engineer and rebuild **$ARGUMENTS** as pixel-perfect clones.
 

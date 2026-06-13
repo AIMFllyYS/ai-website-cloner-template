@@ -1,9 +1,15 @@
 ---
 name: replicating-frontend-websites
 description: Use when asked to clone, mirror, archive, scrape, or 1:1 replicate an existing website's frontend (复刻/克隆/镜像/抓站/扒站/离线备份/还原网站/搬运网站), including static sites, SPAs, SSG/SSR sites, and WebGL/Three.js experience sites. Use even if the user only gives a URL and says "copy this site", "把这个网站搬下来", or asks how to make an offline copy of a web page's design.
+license: Apache-2.0
+metadata:
+  author: 羽升 (AIMFllyYS)
+  version: "1.1.0"
 ---
 
 # 1:1 复刻前端网站（通解）
+
+> **平台 · Claude Code.** 安装到 `.claude/skills/replicating-frontend-websites/`（项目级）或 `~/.claude/skills/`（全局）。说出触发词即自动激活，或 `/replicating-frontend-websites`。Stage 2 需浏览器：用 `claude --chrome` 启动。并行重建用 Task/子代理 + git worktree。
 
 ## 核心原则
 
