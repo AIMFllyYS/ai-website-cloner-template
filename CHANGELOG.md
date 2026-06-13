@@ -8,7 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **Repurposed as the Stage-2 source-reconstruction engine for the `replicating-frontend-websites` Claude Code skill.** Rewrote README and AGENTS.md to document the two-stage flow (Stage 1 = compiled mirror, Stage 2 = this AI rebuild) and the honesty rule that output is an AI equivalent rebuild, not the target's original source.
 - Raised the project Node.js baseline to 24 across local development, CI, Docker, and contributor-facing documentation
+
+### Removed
+- Trimmed to **Claude Code only**: removed non-Claude agent/IDE integrations (`.aider.conf.yml`, `.clinerules`, `.windsurfrules`, `GEMINI.md`, and the `.cursor/ .windsurf/ .gemini/ .codex/ .amazonq/ .augment/ .continue/ .opencode/` config dirs), the GitHub Copilot files (`.github/copilot-instructions.md`, `.github/copilot-setup-steps.yml`, `.github/skills/`), and the now-unneeded sync scripts (`scripts/sync-agent-rules.sh`, `scripts/sync-skills.mjs`)
 
 ## [0.3.1] - 2026-03-29
 

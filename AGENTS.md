@@ -59,7 +59,10 @@ scripts/            # Asset download scripts
 
 ## MOST IMPORTANT NOTES
 - When launching Claude Code agent teams, ALWAYS have each teammate work in their own worktree branch and merge everyone's work at the end, resolving any merge conflicts smartly since you are basically serving the orchestrator role and have full context to our goals, work given, work achieved, and desired outcomes.
-- After editing `AGENTS.md`, run `bash scripts/sync-agent-rules.sh` to regenerate platform-specific instruction files.
-- After editing `.claude/skills/clone-website/SKILL.md`, run `node scripts/sync-skills.mjs` to regenerate the skill for all platforms.
+
+## Role in the two-stage replication flow
+This repo is the **Stage 2 (source reconstruction) engine** for the `replicating-frontend-websites` Claude Code skill. Stage 1 (a separate skill) downloads the target's compiled production output into `<project>-mirror/`. Stage 2 (this engine, via `/clone-website`) AI-rebuilds it into clean, editable Next.js/React/TS source in `<project>-clone/`.
+
+**Honesty rule (non-negotiable):** the output is an **AI equivalent rebuild on a modern stack — NOT the target's original pre-bundle source.** Compiled/minified output cannot be reversed. Always align to the original's visuals & interactions; never claim you recovered the original source code.
 
 @docs/research/INSPECTION_GUIDE.md
